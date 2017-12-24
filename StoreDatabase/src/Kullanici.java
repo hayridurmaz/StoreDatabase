@@ -32,7 +32,11 @@ public class Kullanici {
 	
 
 	public String toString() {
-		return kullaniciId+", "+isim+" "+soyisim+", "+yas+", aldýðý ürün sayýsý: "+satinAldigiUrunler.size();
+		return kullaniciId+", "+isim+" "+soyisim+", "+yas+", aldýðý ürün sayýsý: "+Driver.kullanicininAldigiUrunSayisi(this);
+	}
+	
+	public boolean equals(Kullanici k){
+		return (k.isim.equals(isim) && k.soyisim.equals(soyisim) && k.yas==yas);
 	}
 
 }

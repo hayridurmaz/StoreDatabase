@@ -28,7 +28,10 @@ public class Urun {
 		satinAlanKullanicilar = new ArrayList<>();
 	}
 	public String toString(){
-		return urunId+", "+marka+", "+model+" satýldýðý kullanýcý sayýsý: "+satinAlanKullanicilar.size();
+		return urunId+", "+marka+", "+model+" satýldýðý kullanýcý sayýsý: "+Driver.urunuAlanSayisi(this);
+	}
+	public boolean equals(Urun u){
+		return u.marka.equals(marka) && u.model.equals(model);
 	}
 
 }
