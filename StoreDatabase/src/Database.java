@@ -5,6 +5,9 @@ import org.bson.BSONObject;
 import com.mongodb.*;
 
 public class Database {
+	/*
+	 * Bu class Veritabanýný temsil ediyor.
+	 */
 
 	MongoClient mongoClient;
 	DB db;
@@ -45,6 +48,7 @@ public class Database {
 	}
 
 	public ArrayList<Kullanici> getKullanicilar() {
+		//Kullanýcýlarý arrayListe atýp döndüren metod.
 		ArrayList<Kullanici> kullanicilar = new ArrayList<>();
 
 		List<DBObject> basics = db.getCollection("KULLANICI").find().toArray();// tüm
@@ -64,6 +68,7 @@ public class Database {
 	}
 
 	public ArrayList<Urun> getUrunler() {
+		//Ürünleri arrayListe atýp döndüren metod.
 		ArrayList<Urun> urunler = new ArrayList<>();
 
 		List<DBObject> basics = db.getCollection("URUN").find().toArray();// tüm
@@ -82,6 +87,7 @@ public class Database {
 	}
 
 	public ArrayList<SatinAlma> getSatinAlmalar() {
+		//Satýn almalarý arrayListe atýp döndüren metod.
 		ArrayList<SatinAlma> satinalmalar = new ArrayList<>();
 
 		List<DBObject> basics = db.getCollection("SATINALMA").find().toArray();// tüm
@@ -113,6 +119,7 @@ public class Database {
 	}
 
 	public long getMaxId(String collectionAdi, String fieldAdi) {
+		//Bir tablodaki maksimum id'yi döndüren metod.
 
 		DBCursor curr = db.getCollection(/* "KULLANICI" */collectionAdi).find()
 				.sort(new BasicDBObject(/* "kullaniciId" */fieldAdi, -1)).limit(1);

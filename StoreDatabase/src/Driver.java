@@ -2,12 +2,18 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Driver {
+	/*
+	 * Bu class main metodu içeriyor ve çalýþtýrýyor.
+	 */
+
+	// Database verilerini senkronize eden arrayList'ler.
 	static ArrayList<Kullanici> KULLANICILAR;
 	static ArrayList<Urun> URUNLER;
 	static ArrayList<SatinAlma> SATINALMALAR;
-	static Database db = new Database();
+	static Database db = new Database();//Database objesi.
 
 	public static void main(String[] args) {
+		// Main metod
 
 		URUNLER = db.getUrunler();
 
@@ -15,7 +21,7 @@ public class Driver {
 
 		SATINALMALAR = db.getSatinAlmalar();
 
-		//satinAlanKullaniciSatis();
+		// satinAlanKullaniciSatis();
 		arrayListYazdir(SATINALMALAR);
 		arrayListYazdir(URUNLER);
 		arrayListYazdir(KULLANICILAR);
@@ -118,11 +124,10 @@ public class Driver {
 			} else if (input == 5) {
 				KULLANICILAR = db.getKullanicilar();
 				arrayListYazdir(KULLANICILAR);
-			}else if(input==7){
+			} else if (input == 7) {
 				SATINALMALAR = db.getSatinAlmalar();
 				arrayListYazdir(SATINALMALAR);
-			}
-			else {
+			} else {
 				break;
 			}
 
@@ -180,10 +185,11 @@ public class Driver {
 		}
 		return count;
 	}
-	public static int kullanicininAldigiUrunSayisi(Kullanici k){
-		int count=0;
+
+	public static int kullanicininAldigiUrunSayisi(Kullanici k) {
+		int count = 0;
 		for (int i = 0; i < SATINALMALAR.size(); i++) {
-			if(SATINALMALAR.get(i).kullanici.equals(k))
+			if (SATINALMALAR.get(i).kullanici.equals(k))
 				count++;
 		}
 		return count;
@@ -192,7 +198,8 @@ public class Driver {
 	public static int ikisinideAlanSayisi(int u1, int u2) {
 		int count = 0;
 		for (int i = 0; i < KULLANICILAR.size(); i++) {
-			if(isExistSatis(KULLANICILAR.get(i), URUNLER.get(u1)) && isExistSatis(KULLANICILAR.get(i), URUNLER.get(u2))){
+			if (isExistSatis(KULLANICILAR.get(i), URUNLER.get(u1))
+					&& isExistSatis(KULLANICILAR.get(i), URUNLER.get(u2))) {
 				count++;
 			}
 		}
@@ -206,19 +213,19 @@ public class Driver {
 		}
 	}
 
-	/*public static void satinAlanKullaniciSatis() {
-		// ArrayList<SatinAlma> temp = new ArrayList<>();
-		// System.out.println(SATINALMALAR.size());
-		for (int i = 0; i < SATINALMALAR.size(); i++) {
-			SatinAlma satinAlma = SATINALMALAR.get(i);
-			int k = getKullanici(satinAlma.kullanici.kullaniciId);
-			int u = getUrun(satinAlma.urun.urunId);
-			URUNLER.get(u).satinAlanKullaniciEkle(KULLANICILAR.get(k));
-			KULLANICILAR.get(k).satinAldigiUrunEkle(URUNLER.get(u));
-			System.err.println(URUNLER.get(u).satinAlanKullanicilar.size());
-			System.err.println(KULLANICILAR.get(k).isim + " " + KULLANICILAR.get(k).satinAldigiUrunler.size());
-		}
-	}*/
+	/*
+	 * public static void satinAlanKullaniciSatis() { // ArrayList<SatinAlma>
+	 * temp = new ArrayList<>(); // System.out.println(SATINALMALAR.size()); for
+	 * (int i = 0; i < SATINALMALAR.size(); i++) { SatinAlma satinAlma =
+	 * SATINALMALAR.get(i); int k =
+	 * getKullanici(satinAlma.kullanici.kullaniciId); int u =
+	 * getUrun(satinAlma.urun.urunId);
+	 * URUNLER.get(u).satinAlanKullaniciEkle(KULLANICILAR.get(k));
+	 * KULLANICILAR.get(k).satinAldigiUrunEkle(URUNLER.get(u));
+	 * System.err.println(URUNLER.get(u).satinAlanKullanicilar.size());
+	 * System.err.println(KULLANICILAR.get(k).isim + " " +
+	 * KULLANICILAR.get(k).satinAldigiUrunler.size()); } }
+	 */
 
 	public static boolean isExistSatis(Kullanici k, Urun u) {
 		for (SatinAlma satinAlma : SATINALMALAR) {
