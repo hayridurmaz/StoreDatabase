@@ -95,19 +95,19 @@ public class Database {
 													// tutuyor.
 			long Urunid = Long.parseLong(basics.get(i).get("urunId").toString());
 			long Kullaniciid = Long.parseLong(basics.get(i).get("kullaniciId").toString());
-			Urun u = Driver.getUrun(Urunid);
-			Kullanici k = Driver.getKullanici(Kullaniciid);
+			int u = Driver.getUrun(Urunid);
+			int k = Driver.getKullanici(Kullaniciid);
 
-			if(k==null || u ==null){
+			if(k==-1 || u ==-1){
 				System.err.println("Bir hata oluþtu.");
 			}
-			satinalmalar.add(new SatinAlma(k, u));
-			k.satinAldigiUrunEkle(u);
-			Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).satinAldigiUrunEkle(Driver.getUrunbyMarkaModel(u.marka, u.model));
-			Driver.getUrunbyMarkaModel(u.marka, u.model).satinAlanKullaniciEkle(Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim));
-			u.satinAlanKullaniciEkle(k);
-			System.out.println("adý:::::"+Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).isim);
-			System.out.println("size.::"+Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).getSatinAldigiUrunler().size());
+			satinalmalar.add(new SatinAlma(Driver.KULLANICILAR.get(k), Driver.URUNLER.get(u)));
+//			k.satinAldigiUrunEkle(u);
+//			Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).satinAldigiUrunEkle(Driver.getUrunbyMarkaModel(u.marka, u.model));
+//			Driver.getUrunbyMarkaModel(u.marka, u.model).satinAlanKullaniciEkle(Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim));
+//			u.satinAlanKullaniciEkle(k);
+//			System.out.println("adý:::::"+Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).isim);
+//			System.out.println("size.::"+Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).getSatinAldigiUrunler().size());
 		}
 		return satinalmalar;
 	}

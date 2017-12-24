@@ -49,8 +49,8 @@ public class Driver {
 				String marka = scan.next();
 				System.out.println("Ürün modeli giriniz.");
 				String model = scan.next();
-				Urun u = getUrunbyMarkaModel(marka, model);
-				if (u == null) {
+				int indexUrun = getUrunbyMarkaModel(marka, model);
+				if (indexUrun == -1) {
 					System.err.println("Böyle bir ürün yok");
 					continue;
 				}
@@ -58,24 +58,24 @@ public class Driver {
 				String isim = scan.next();
 				System.out.println("Kullanýcýnýn soyismini giriniz");
 				String soyisim = scan.next();
-				Kullanici k = getKullanicibyIsimSoyisim(isim, soyisim);
-				if (k == null) {
+				int indexKullanici = getKullanicibyIsimSoyisim(isim, soyisim);
+				if (indexKullanici==-1) {
 					System.err.println("Böyle bir kullanýcý yok");
 					continue;
 				}
-				SatinAlma satinAlma = new SatinAlma(k, u);
-				getKullanicibyIsimSoyisim(k.isim, k.soyisim).satinAldigiUrunEkle(u);
-				getUrunbyMarkaModel(u.marka, u.model).satinAlanKullaniciEkle(k);
-				k.satinAldigiUrunEkle(u);
-				u.satinAlanKullaniciEkle(k);
+				SatinAlma satinAlma = new SatinAlma(KULLANICILAR.get(indexKullanici), URUNLER.get(indexUrun));
+				KULLANICILAR.get(indexKullanici).satinAldigiUrunEkle(URUNLER.get(indexUrun));
+				URUNLER.get(indexUrun).satinAlanKullaniciEkle(KULLANICILAR.get(indexKullanici));
+//				k.satinAldigiUrunEkle(u);
+//				u.satinAlanKullaniciEkle(k);
 				db.satinalmaEkle(satinAlma);
 			} else if (input == 4) {
 				System.out.println("Birinci ürünün markasýný giriniz:");
 				String marka1 = scan.next();
 				System.out.println("Birinci ürünün modelini giriniz:");
 				String model1 = scan.next();
-				Urun u1 = getUrunbyMarkaModel(marka1, model1);
-				if (u1 == null) {
+				int u1 = getUrunbyMarkaModel(marka1, model1);
+				if (u1 == -1) {
 					System.err.println("Böyle bir ürün yok");
 					continue;
 				}
@@ -83,12 +83,12 @@ public class Driver {
 				String marka2 = scan.next();
 				System.out.println("Ýkinci ürünün modelini giriniz");
 				String model2 = scan.next();
-				Urun u2 = getUrunbyMarkaModel(marka2, model2);
-				if (u2 == null) {
+				int u2 = getUrunbyMarkaModel(marka2, model2);
+				if (u2 == -1) {
 					System.err.println("Böyle bir ürün yok");
 					continue;
 				}
-				int birinciUrunSayi = u1.getSatinAlanKullanicilar().size();
+				int birinciUrunSayi = URUNLER.get(u1).getSatinAlanKullanicilar().size();
 				int ikisideUrunSayi = ikisinideAlanSayisi(u1, u2);
 				System.out.println("Birinci ürünü alan kullanýcý sayýsý: " + birinciUrunSayi);
 				System.out.println("Ýki ürünü de alan kullanýcý sayýsý: " + ikisideUrunSayi);
@@ -113,51 +113,51 @@ public class Driver {
 		scan.close();
 	}
 
-	public static Urun getUrun(long id) {
+	public static int getUrun(long id) {
 		URUNLER = db.getUrunler();
 		for (int i = 0; i < URUNLER.size(); i++) {
 			if (URUNLER.get(i).urunId == id) {
-				return URUNLER.get(i);
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 
-	public static Urun getUrunbyMarkaModel(String marka, String model) {
+	public static int getUrunbyMarkaModel(String marka, String model) {
 		URUNLER = db.getUrunler();
 		for (int i = 0; i < URUNLER.size(); i++) {
 			if (marka.equalsIgnoreCase(URUNLER.get(i).marka) && model.equalsIgnoreCase(URUNLER.get(i).model)) {
-				return URUNLER.get(i);
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 
-	public static Kullanici getKullanicibyIsimSoyisim(String isim, String soyisim) {
+	public static int getKullanicibyIsimSoyisim(String isim, String soyisim) {
 		KULLANICILAR = db.getKullanicilar();
 		for (int i = 0; i < KULLANICILAR.size(); i++) {
 			if (isim.equalsIgnoreCase(KULLANICILAR.get(i).isim)
 					&& soyisim.equalsIgnoreCase(KULLANICILAR.get(i).soyisim)) {
-				return KULLANICILAR.get(i);
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 
-	public static Kullanici getKullanici(long id) {
+	public static int getKullanici(long id) {
 		KULLANICILAR = db.getKullanicilar();
 		for (int i = 0; i < KULLANICILAR.size(); i++) {
 			if (KULLANICILAR.get(i).kullaniciId == id) {
-				return KULLANICILAR.get(i);
+				return i;
 			}
 		}
-		return null;
+		return -1;
 	}
 
-	public static int ikisinideAlanSayisi(Urun u1, Urun u2) {
+	public static int ikisinideAlanSayisi(int u1, int u2) {
 		int count = 0;
 		for (int i = 0; i < KULLANICILAR.size(); i++) {
-			if (KULLANICILAR.get(i).isExist(u1) && KULLANICILAR.get(i).isExist(u2)) {
+			if (KULLANICILAR.get(i).isExist(URUNLER.get(u1)) && KULLANICILAR.get(i).isExist(URUNLER.get(u2))) {
 				count++;
 			}
 		}
@@ -170,13 +170,14 @@ public class Driver {
 			System.out.println(a.get(i).toString());
 		}
 	}
+
 	public static void satinAlanKullaniciSatis(ArrayList<SatinAlma> arr){
 		//ArrayList<SatinAlma> temp = new ArrayList<>();
 		for (SatinAlma satinAlma : arr) {
-			Kullanici k=getKullanici(satinAlma.kullanici.kullaniciId);
-			Urun u = getUrun(satinAlma.urun.urunId);
-			u.satinAlanKullaniciEkle(k);
-			k.satinAldigiUrunEkle(u);
+			int k=getKullanici(satinAlma.kullanici.kullaniciId);
+			int u = getUrun(satinAlma.urun.urunId);
+			URUNLER.get(u).satinAlanKullaniciEkle(KULLANICILAR.get(k));
+			KULLANICILAR.get(k).satinAldigiUrunEkle(URUNLER.get(u));
 		}
 	}
 }
