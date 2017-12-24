@@ -29,5 +29,10 @@ public class Kullanici {
 		this.yas = yas;
 		satinAldigiUrunler = new ArrayList<>();
 	}
+	
+
+	public String toString() {
+		return kullaniciId+", "+isim+" "+soyisim+", "+yas+", aldýðý ürün sayýsý: "+satinAldigiUrunler.size();
+	}
 
 }

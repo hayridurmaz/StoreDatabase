@@ -1,38 +1,182 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 public class Driver {
 	static ArrayList<Kullanici> KULLANICILAR;
 	static ArrayList<Urun> URUNLER;
 	static ArrayList<SatinAlma> SATINALMALAR;
-	static Database db= new Database();
+	static Database db = new Database();
 
 	public static void main(String[] args) {
+
+		URUNLER = db.getUrunler();
+	
+		KULLANICILAR = db.getKullanicilar();
 		
+		SATINALMALAR = db.getSatinAlmalar();
+		satinAlanKullaniciSatis(SATINALMALAR);
+		arrayListYazdir(SATINALMALAR);
+		arrayListYazdir(URUNLER);
+		arrayListYazdir(KULLANICILAR);
 		Scanner scan = new Scanner(System.in);
+		int input = 0;
 		while (true) {
-			System.out.println("MENU:\n(1)Kullanýcý Ekle\n(2)Ürün Ekle\n(3)Satýnalma ekle\n(4)Analiz Al\n(5)Çýkýþ");
-			
-			break;
+			System.out.println(
+					"MENU:\n(1)Kullanýcý Ekle\n(2)Ürün Ekle\n(3)Satýnalma ekle\n(4)Analiz Al\n(5)Kullanýcý Listeleme\n(6)Ürün Listeleme\n(7)ÇIKIÞ");
+			input = scan.nextInt();
+
+			if (input == 1) {
+				System.out.println("Lütfen isim girin.");
+				String isim = scan.next();
+				System.out.println("Lütfen soyisim girin:");
+				String soyisim = scan.next();
+				System.out.println("Lütfen yaþý girin:");
+				int yas = scan.nextInt();
+				long id = db.getMaxId("KULLANICI", "kullaniciId") + 1;
+				Kullanici k = new Kullanici(id, isim, soyisim, yas);
+				db.kullaniciEkle(k);
+
+			} else if (input == 2) {
+				System.out.println("Lütfen marka giriniz");
+				String marka = scan.next();
+				System.out.println("Lütfen model giriniz");
+				String model = scan.next();
+				Urun urun = new Urun(db.getMaxId("URUN", "urunId") + 1, marka, model);
+				db.urunEkle(urun);
+			} else if (input == 3) {
+				System.out.println("Ürün marka giriniz.");
+				String marka = scan.next();
+				System.out.println("Ürün modeli giriniz.");
+				String model = scan.next();
+				Urun u = getUrunbyMarkaModel(marka, model);
+				if (u == null) {
+					System.err.println("Böyle bir ürün yok");
+					continue;
+				}
+				System.out.println("Kullanýcýnýn ismini giriniz");
+				String isim = scan.next();
+				System.out.println("Kullanýcýnýn soyismini giriniz");
+				String soyisim = scan.next();
+				Kullanici k = getKullanicibyIsimSoyisim(isim, soyisim);
+				if (k == null) {
+					System.err.println("Böyle bir kullanýcý yok");
+					continue;
+				}
+				SatinAlma satinAlma = new SatinAlma(k, u);
+				getKullanicibyIsimSoyisim(k.isim, k.soyisim).satinAldigiUrunEkle(u);
+				getUrunbyMarkaModel(u.marka, u.model).satinAlanKullaniciEkle(k);
+				k.satinAldigiUrunEkle(u);
+				u.satinAlanKullaniciEkle(k);
+				db.satinalmaEkle(satinAlma);
+			} else if (input == 4) {
+				System.out.println("Birinci ürünün markasýný giriniz:");
+				String marka1 = scan.next();
+				System.out.println("Birinci ürünün modelini giriniz:");
+				String model1 = scan.next();
+				Urun u1 = getUrunbyMarkaModel(marka1, model1);
+				if (u1 == null) {
+					System.err.println("Böyle bir ürün yok");
+					continue;
+				}
+				System.out.println("Ýkinci ürünün markasýný giriniz");
+				String marka2 = scan.next();
+				System.out.println("Ýkinci ürünün modelini giriniz");
+				String model2 = scan.next();
+				Urun u2 = getUrunbyMarkaModel(marka2, model2);
+				if (u2 == null) {
+					System.err.println("Böyle bir ürün yok");
+					continue;
+				}
+				int birinciUrunSayi = u1.getSatinAlanKullanicilar().size();
+				int ikisideUrunSayi = ikisinideAlanSayisi(u1, u2);
+				System.out.println("Birinci ürünü alan kullanýcý sayýsý: " + birinciUrunSayi);
+				System.out.println("Ýki ürünü de alan kullanýcý sayýsý: " + ikisideUrunSayi);
+				double oran = (100.0 * birinciUrunSayi / ikisideUrunSayi);
+				System.out.println("Birinci ürünü alan kullanýcýlarýn yüzde " + oran);
+			} else if (input == 6) {
+				URUNLER = db.getUrunler();
+				for (int i = 0; i < URUNLER.size(); i++) {
+					System.out.println(URUNLER.get(i).marka + " - " + URUNLER.get(i).model);
+				}
+			} else if (input == 5) {
+				KULLANICILAR = db.getKullanicilar();
+				for (int i = 0; i < KULLANICILAR.size(); i++) {
+					System.out.println(KULLANICILAR.get(i).isim + " id:" + KULLANICILAR.get(i).kullaniciId);
+
+				}
+			} else {
+				break;
+			}
+
 		}
 		scan.close();
 	}
-	public static Urun getUrun(long id){
+
+	public static Urun getUrun(long id) {
 		URUNLER = db.getUrunler();
 		for (int i = 0; i < URUNLER.size(); i++) {
-			if(URUNLER.get(i).urunId==id){
+			if (URUNLER.get(i).urunId == id) {
 				return URUNLER.get(i);
 			}
 		}
 		return null;
 	}
-	public static Kullanici getKullanici(long id){
+
+	public static Urun getUrunbyMarkaModel(String marka, String model) {
+		URUNLER = db.getUrunler();
+		for (int i = 0; i < URUNLER.size(); i++) {
+			if (marka.equalsIgnoreCase(URUNLER.get(i).marka) && model.equalsIgnoreCase(URUNLER.get(i).model)) {
+				return URUNLER.get(i);
+			}
+		}
+		return null;
+	}
+
+	public static Kullanici getKullanicibyIsimSoyisim(String isim, String soyisim) {
 		KULLANICILAR = db.getKullanicilar();
 		for (int i = 0; i < KULLANICILAR.size(); i++) {
-			if(KULLANICILAR.get(i).kullaniciId==id){
+			if (isim.equalsIgnoreCase(KULLANICILAR.get(i).isim)
+					&& soyisim.equalsIgnoreCase(KULLANICILAR.get(i).soyisim)) {
 				return KULLANICILAR.get(i);
 			}
 		}
 		return null;
+	}
+
+	public static Kullanici getKullanici(long id) {
+		KULLANICILAR = db.getKullanicilar();
+		for (int i = 0; i < KULLANICILAR.size(); i++) {
+			if (KULLANICILAR.get(i).kullaniciId == id) {
+				return KULLANICILAR.get(i);
+			}
+		}
+		return null;
+	}
+
+	public static int ikisinideAlanSayisi(Urun u1, Urun u2) {
+		int count = 0;
+		for (int i = 0; i < KULLANICILAR.size(); i++) {
+			if (KULLANICILAR.get(i).isExist(u1) && KULLANICILAR.get(i).isExist(u2)) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	public static void arrayListYazdir(ArrayList<?> a){
+		System.out.println(a.size()+" eleman.");
+		for (int i = 0; i < a.size(); i++) {
+			System.out.println(a.get(i).toString());
+		}
+	}
+	public static void satinAlanKullaniciSatis(ArrayList<SatinAlma> arr){
+		//ArrayList<SatinAlma> temp = new ArrayList<>();
+		for (SatinAlma satinAlma : arr) {
+			Kullanici k=getKullanici(satinAlma.kullanici.kullaniciId);
+			Urun u = getUrun(satinAlma.urun.urunId);
+			u.satinAlanKullaniciEkle(k);
+			k.satinAldigiUrunEkle(u);
+		}
 	}
 }

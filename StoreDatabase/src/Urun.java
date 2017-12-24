@@ -27,5 +27,8 @@ public class Urun {
 		this.model = model;
 		satinAlanKullanicilar = new ArrayList<>();
 	}
+	public String toString(){
+		return urunId+", "+marka+", "+model+" satýldýðý kullanýcý sayýsý: "+satinAlanKullanicilar.size();
+	}
 
 }

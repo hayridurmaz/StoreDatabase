@@ -37,10 +37,10 @@ public class Database {
 		URUN.insert(document);
 	}
 
-	public void satinalmaEkle(Kullanici kullanici, Urun urun) {
+	public void satinalmaEkle(SatinAlma satinAlma) {
 		BasicDBObject document = new BasicDBObject();
-		document.put("kullaniciId", kullanici.kullaniciId);
-		document.put("urunId", urun.urunId);
+		document.put("kullaniciId", satinAlma.kullanici.kullaniciId);
+		document.put("urunId", satinAlma.urun.urunId);
 		SATINALMA.insert(document);
 	}
 
@@ -98,7 +98,16 @@ public class Database {
 			Urun u = Driver.getUrun(Urunid);
 			Kullanici k = Driver.getKullanici(Kullaniciid);
 
+			if(k==null || u ==null){
+				System.err.println("Bir hata oluþtu.");
+			}
 			satinalmalar.add(new SatinAlma(k, u));
+			k.satinAldigiUrunEkle(u);
+			Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).satinAldigiUrunEkle(Driver.getUrunbyMarkaModel(u.marka, u.model));
+			Driver.getUrunbyMarkaModel(u.marka, u.model).satinAlanKullaniciEkle(Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim));
+			u.satinAlanKullaniciEkle(k);
+			System.out.println("adý:::::"+Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).isim);
+			System.out.println("size.::"+Driver.getKullanicibyIsimSoyisim(k.isim, k.soyisim).getSatinAldigiUrunler().size());
 		}
 		return satinalmalar;
 	}
